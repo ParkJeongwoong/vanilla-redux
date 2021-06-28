@@ -1,70 +1,51 @@
-# Getting Started with Create React App
+# Redux
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+> https://ko.redux.js.org/introduction/getting-started/
 
-## Available Scripts
+React JS Fundamentals Course (2019 Update)
 
-In the project directory, you can run:
+노마드 코더 강의 : `ReactJS로 영화 웹 서비스 만들기`
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Without Redux (Pure Redux)
 
-### `npm test`
+설치 : `npm install redux`
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+사용 :
 
-### `npm run build`
+1. import 
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```react
+import { createStore } from "redux";
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+2.  Store, Reducer, Actions 활용
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Redux Flow
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+![08/26, redux(3)](https://media.vlpt.us/images/sonofhuman20/post/e8bc8967-8762-494a-aa01-8c77556f8edb/redux.png)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+1. **Store에 데이터 저장** (`createStore() 사용`)
+2. **Reducers를 통해 Store에 저장된 값 변경** (`createStore함수 안에 reducer 함수를 인자로 / 이후 reducer의 return 값이 store에 저장`)
+   - 첫 번째 인자는 state, 두 번째 인자는 action
+     - 이 때, state에는 초기 값을 default 형태로 설정한다
+3. **Actions를 통해 Reducers 실행** (`state.dispatch()를 통해 reducer의 두 번째 인자, action에 message를 보냄`)
+   - 구체적으로는 <u>객체</u> (`{ type : action}`)이며 reducer에서 action 인자는 type 안의 action(문자열)을 전달받게 된다
+4. <u>시작은 Actions 부터</u>
+   1. **`state.dispatch(action)`** /// `state.dispatch({type : data})`
+   2. **`reducer = (state, action) => {changedState}`**
+   3. **`state = createStore(reducer)`** /// `state = changedState`
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-## Learn More
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Subscribe
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+![Redux 개념 익히기 -1](https://media.vlpt.us/images/cyongchoi/post/fa7c231f-fb68-4fde-a96d-c791360dfb8d/Bildschirmfoto-2017-12-01-um-08.56.48.png)
 
-### Code Splitting
+**`state.subscribe(callback)`**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- state의 변화를 감지하고 인자로 가지고 있는 callback 함수를 실행
 
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
