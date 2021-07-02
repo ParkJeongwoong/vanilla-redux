@@ -1,6 +1,10 @@
 # Redux
 
 > https://ko.redux.js.org/introduction/getting-started/
+>
+> https://d2.naver.com/helloworld/1848131
+>
+> https://react-redux.js.org/using-react-redux/connect-mapstate
 
 React JS Fundamentals Course (2019 Update)
 
@@ -185,3 +189,110 @@ store.subscribe(paintTodos);
 
 - State은 mutate하면 X
 - new state object를 return 해야 함!
+
+
+
+
+
+## REACT REDUX
+
+**이미 React와 Redux를 썼지만**, `react-redux`와 `react-router-dom`을 설치해야 한다
+
+`npm i react-redux react-router-dom`
+
+### 설명
+
+- `reactDom` 
+
+  - https://ko.reactjs.org/docs/react-dom.html
+
+  - <u>앱의 최상위 레벨</u>에서 사용할 수 있는 <u>DOM에 특화된 메서드</u> + React 모델 외부로 나갈 수 있는 해결책을 제공
+
+  - 사용
+
+    ```react
+    // index.js
+    import ReactDom from "react-dom";
+    import App from "./components/App";
+    
+    ReactDom.render(<App></App>, document.getElementById("root"));
+    ```
+
+    위의 경우 **index.html에 있는 <div id="root"></div>를 index.js로 가져와서 App.js를 랜더링**
+
+
+
+- `react-router-dom` 
+
+  - https://velog.io/@kwonh/React-react-router-dom-%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0
+
+  - **https://yerinko.tistory.com/27**
+
+    ```
+    - react-router - 웹&앱
+    - react-router-dom - 웹
+    - react-router-native -앱
+    ```
+
+  - react에서 Routing을 할 때 사용하는 패키지 (이전에 다뤘음)
+
+
+
+- **`react-redux`** - redux에서 추가된 어댑터! (<u>redux가 반드시 필요</u>)
+  - https://react.vlpt.us/redux/
+  - redux 는 리액트에서 사용하기 위해 만들어진 라이브러리이긴 하지만 무조건 리액트와 함께 사용 할 필요 X
+    - 그래서 Pure Redux로 먼저 구현했던 것
+  - redux -> react-redux 사용 시 **장점**
+    1. redux를 쓰면서 생기는 react 코드 구조의 변화를 최소화 (**코드 구조 유지**)
+    2. redux를 쓰면 모듈화가 힘들지만 react-redux에서는 이를 해결 (**모듈화**)
+
+
+
+### connect
+
+> https://react-redux.js.org/api/connect
+
+`import { connect } from 'react-redux';` => react-redux에서 가져와 쓰는 함수
+
+(아래의 mapStateToProps와 mapDispatchToProps는 이 connect의 인자일 뿐)
+
+
+
+- connect는 export default와 함께 쓰인다 => **기존의 `export default 컴포넌트명`이 `export default connect(인자)(컴포넌트명)`으로 바뀐다**
+
+=> 즉 connect 함수의 의미는, **<u>인자로 받은 객체를 해당 컴포넌트에 연결하는 것</u>**
+
+
+
+#### mapStateToProps
+
+- **connect 함수의 첫 번째 인자** (함수 or 객체) (함수의 경우 객체를 return) -> <u>따라서 꼭 이 이름이 아니어도 된다</u>
+- store가 업데이트 될 때마다 자동으로 호출
+
+```react
+function mapStateToProps(state, ownProps?) => Object
+```
+
+- 첫 번째 인자, `Redux store`에서 가져온 `state`
+- 두 번째 인자(옵션), `ownProps`는 `component의 props` 
+
+
+
+- 즉 <u>Redux store에서 가져온 값(state) + component가 직접 받은 props(ownProps)를 모두 활용 => 리턴한 객체를 return</u>
+
+
+
+#### mapDispatchToProps
+
+
+
+
+
+
+
+### 폴더구조
+
+
+
+### 코드
+
