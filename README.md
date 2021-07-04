@@ -84,13 +84,6 @@ const ul = document.querySelector("ul");
 const ADD_TODO = "ADD_TODO";
 const DELETE_TODO = "DELETE_TODO";
 
-const addTodo = text => {
-  return {
-    type: ADD_TODO,
-    text
-  }
-};
-
 const deleteTodo = id => {
   return {
     type: DELETE_TODO,
@@ -98,6 +91,7 @@ const deleteTodo = id => {
   }
 };
 
+// Reducer => state를 Return
 const reducer = (state = [], action) => {
   switch (action.type) {
     case ADD_TODO:
@@ -111,19 +105,27 @@ const reducer = (state = [], action) => {
   }
 };
 
+// store : 여기서 reducer가 return 하는 state를 저장
 const store = createStore(reducer);
 
+// Actions => dispatch를 통해 reducer의 action을 전달
+const addTodo = text => {
+  return {
+    type: ADD_TODO,
+    text
+  }
+};
 
+// Dispatch를 이용한 Actions 호출
 const dispatchAddTodo = text => {
   store.dispatch(addTodo(text));
 };
-
 const dispatchDeleteTodo = e => {
   const id = e.target.parentNode.id;
   store.dispatch(deleteTodo(id));
 };
 
-
+// store를 subscribe하면서 렌더링하는 함수
 const paintTodos = () => {
   const toDos = store.getState();
   ul.innerHTML = "";
@@ -273,7 +275,7 @@ store.subscribe(paintTodos);
 function mapStateToProps(state, ownProps?) => Object
 ```
 
-- 첫 번째 인자, `Redux store`에서 가져온 `state`
+- 첫 번째 인자, `Redux store`에서 가져온 `state` -> 그냥 Store 값이라고 생각해도 된다
 - 두 번째 인자(옵션), `ownProps`는 `component의 props` 
 
 
@@ -284,15 +286,135 @@ function mapStateToProps(state, ownProps?) => Object
 
 #### mapDispatchToProps
 
+- **connect 함수의 두 번째 인자** (함수 or 객체) (마찬가지로 함수의 경우 객체를 return) -> <u>꼭 이 이름이 아니어도 된다</u>
+- state와 비슷하지만 차이점이 있다면 state를 가져오는 게 아니라 **actions를 가져오는 것**
+
+```react
+function mapDispatchToProps(dispatch, ownProps?) => Object
+```
+
+- 첫 번째 인자, `store.js`에서 가져온 `actions`
+- 두 번째 인자(옵션), `ownProps`는 `component의 props` 
 
 
 
+- 이렇게 <u>Return한 객체는 connect를 호출한 component의 props에 추가가 됨 => action을 props를 통해 사용할 수 있음</u>
 
 
 
 ### 폴더구조
 
+- src
+  - component -> **페이지 구성요소**
+    - `App.js` -> routes의 Home,js와 Detail.js <u>렌더링을 결정하는 컴포넌트</u>
+    - `ToDos.js` -> Home.js에서 사용하는 컴포넌트
+  - routes
+    - `Home.js`
+    - `Detail.js`
+  - `index.js` -> **메인 컴포넌트**. <u>index.html과 연결</u>되어 <u>App.js 컴포넌트를 호출</u>
+  - `store.js` -> **Store 정보 저장**
 
 
-### 코드
 
+## React Redux Flow
+
+1. state를 return하는 `Reducer`
+
+   ```react
+   const reducer = (state = [], action) => {
+     switch (action.type) {
+       case ADD:
+         return [{ text: action.text, id: Date.now() }, ...state];
+       case DELETE:
+         return state.filter(toDo => toDo.id !== action.id);
+       default:
+         return state;
+     }
+   };
+   ```
+
+   
+
+2. Reducer에서 state를 가져와 저장하는 `store`
+
+   ```react
+   const store = createStore(reducer);
+   ```
+
+
+
+3. Reducer의 action 부분을 담당할 `Actions`
+
+   ```react
+   const ADD = "ADD";
+   const DELETE = "DELETE";
+   
+   const addTodo = text => {
+     return {
+       type: ADD,
+       text,
+     };
+   };
+   
+   const deleteTodo = id => {
+     return {
+       type: DELETE,
+       id: parseInt(id),
+     };
+   };
+   ```
+
+
+
+4. 외부적으로는 store와 actions만 접근 가능 (reducer는 외부에서 접근 불가. reducer를 통해 직접 store를 수정하면 안 되기 때문)
+
+   ```react
+   export const actionCreators = {
+     addTodo,
+     deleteTodo,
+   };
+   
+   export default store;
+   ```
+
+   
+
+5. connect
+
+   1. mapStateToProps를 사용해 store 값을 호출
+
+      ```react
+      function mapStateToProps(state) {
+        return { toDos: state };
+      }
+      
+      function mapDispatchToProps(dispatch) {
+        return {
+          addToDo: text => dispatch(actionCreators.addTodo(text)),
+        };
+      }
+      
+      export default connect(mapStateToProps, mapDispatchToProps)(Home);
+      ```
+
+      mapStateToProps가 Return한 값은 해당 컴포넌트의 props에 추가된다
+
+      (이 때 mapDispatchToProps는 option이며 필요하지 않다면 생략해도 된다)
+
+      
+
+   2. mapDispatchToProps를 사용해 actions 호출
+
+      ```react
+      function mapDispatchToProps(dispatch, ownProps) {
+        return {
+          onBtnClick: () => dispatch(actionCreators.deleteTodo(ownProps.id)),
+        };
+      }
+      
+      export default connect(null, mapDispatchToProps)(ToDo);
+      ```
+
+      mapDispatchToProps가 return한 값이 해당 컴포넌트의 props에 추가된다
+
+      만약 mapStateToProps가 필요하지 않다면 위와 같이 connect 함수의 첫 번째 인자를 null로 두면 된다.
