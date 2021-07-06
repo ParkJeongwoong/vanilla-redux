@@ -6,9 +6,9 @@
 >
 > https://react-redux.js.org/using-react-redux/connect-mapstate
 
-React JS Fundamentals Course (2019 Update)
 
-노마드 코더 강의 : `ReactJS로 영화 웹 서비스 만들기`
+
+노마드 코더 강의 : `초보자를 위한 리덕스 101`
 
 
 
@@ -250,6 +250,27 @@ store.subscribe(paintTodos);
 
 
 
+- `Provider` - 생성한 store를 연결하는 태그
+
+  ```react
+  import React from "react";
+  import ReactDom from "react-dom";
+  import App from "./components/App";
+  import { Provider } from "react-redux";
+  import store from "./store";
+  
+  ReactDom.render(
+    <Provider store={store}>
+      <App />
+    </Provider>,
+    document.getElementById("root")
+  );
+  ```
+
+
+
+
+
 ### connect
 
 > https://react-redux.js.org/api/connect
@@ -418,3 +439,188 @@ function mapDispatchToProps(dispatch, ownProps?) => Object
       mapDispatchToProps가 return한 값이 해당 컴포넌트의 props에 추가된다
 
       만약 mapStateToProps가 필요하지 않다면 위와 같이 connect 함수의 첫 번째 인자를 null로 두면 된다.
+
+
+
+
+
+## Redux Toolkit
+
+> Redux의 코드양을 줄여주고 Redux를 편리하게 사용할 수 있도록 도와주는 도구를 제공
+>
+> https://redux-toolkit.js.org/
+
+
+
+1. 설치 : `npm install @reduxjs/toolkit`
+
+### createAction
+
+> https://redux-toolkit.js.org/api/createAction
+
+- store.js
+
+- `import { createAction } from "@reduxjs/toolkit";`
+
+
+
+- 기존
+
+```react
+const ADD = "ADD";
+const DELETE = "DELETE";
+
+const addTodo = text => {
+  return {
+    type: ADD,
+    text,
+  };
+};
+
+const deleteTodo = id => {
+  return {
+    type: DELETE,
+    id: parseInt(id),
+  };
+};
+```
+
+- createAction 사용
+
+```react
+const addTodo = createAction("ADD")
+const deleteTodo = createAction("DELETE")
+```
+
+​	`reducer`의 case의 <u>`ADD`, `DELETE` => **`addTodo.type`, `deleteTodo.type`**</u> && <u>`action.text`, `action.id` => **`action.payload`**</u>
+
+​	**createAction은 자동으로 입력한 인자를 payload로 설정해서 return**
+
+
+
+### createReducer
+
+> https://redux-toolkit.js.org/api/createReducer
+
+- store.js
+
+- `import { createReducer } from "@reduxjs/toolkit";`
+
+
+
+- 기존
+
+```react
+const reducer = (state = [], action) => {
+  switch (action.type) {
+  	// action이 addTodo일 때의 동작
+    case addTodo.type:
+      return [{ text: action.payload, id: Date.now() }, ...state];
+ 	// action이 deleteTodo일 때의 동작
+    case deleteTodo.type:
+      return state.filter(toDo => toDo.id !== action.payload);
+    default:
+      return state;
+  }
+};
+```
+
+- createReducer 사용
+
+```react
+const reducer = createReducer([], {
+  // action이 addTodo일 때의 동작
+  [addTodo]: (state, action) => {
+    state.push({ text: action.payload, id: Date.now() }); // 중요!! createReducer에서는 state mutation을 해도 괜찮음!! / 이 때는 return 하지 않음
+  },
+  // action이 deleteTodo일 때의 동작
+  [deleteTodo]: (state, action) => {
+    return state.filter(toDo => toDo.id !== action.payload); // 이렇게 새로운 state를 return 해도 괜찮긴 함 / 이 때는 return 함
+  },
+});
+```
+
+​	\*\*\* **<u>중요!! createReducer에서는 state mutation을 해도 괜찮음!!</u>** \*\*\* (이런 경우에는 reducer에서 state를 return하지 않음)
+
+
+
+### configureStore
+
+> https://redux-toolkit.js.org/api/configureStore
+
+- store.js
+
+- `import { configureStore } from "@reduxjs/toolkit";`
+
+
+
+- 기존
+
+```react
+const store = createStore(reducer);
+```
+
+- configureStore 사용
+
+```react
+const store = configureStore({ reducer });
+```
+
+​	미들웨어 추가 / redux developer tool 사용 가능
+
+
+
+### createSlice
+
+> https://redux-toolkit.js.org/api/createSlice
+
+- store.js
+
+- `import { createSlice } from "@reduxjs/toolkit";`
+
+
+
+- 기존
+
+```react
+const addTodo = createAction("ADD");
+const deleteTodo = createAction("DELETE");
+
+const reducer = createReducer([], {
+  [addTodo]: (state, action) => {
+    state.push({ text: action.payload, id: Date.now() });
+  },
+  [deleteTodo]: (state, action) => {
+    return state.filter(toDo => toDo.id !== action.payload);
+  },
+});
+
+const store = configureStore({ reducer });
+
+export const actionCreators = {
+  addTodo,
+  deleteTodo,
+};
+```
+
+- createSlice 사용
+
+```react
+const toDos = createSlice({
+  name: "toDosReducer",
+  initialState: [],
+  reducers: {
+    add: (state, action) => {
+      state.push({ text: action.payload, id: Date.now() });
+    },
+    remove: (state, action) => {
+      return state.filter(toDo => toDo.id !== action.payload);
+    },
+  },
+});
+
+const store = configureStore({ reducer: toDos.reducer });
+
+export const { add, remove } = toDos.actions;
+```
+
